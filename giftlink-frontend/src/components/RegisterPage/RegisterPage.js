@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
+// Task 1: Import urlConfig
+import { urlConfig } from '../../config';
+
+// Task 2: Import useAppContext
+import { useAppContext } from '../../context/AuthContext';
+
+// Task 3: Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 function RegisterPage() {
     // useState hooks for form fields
@@ -7,12 +15,52 @@ function RegisterPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    // Task 4: Include a state for error message
+const [showerr, setShowerr] = useState('');
+
+// Task 5: Create local variables for navigate and setIsLoggedIn
+const navigate = useNavigate();
+const { setIsLoggedIn } = useAppContext();
 
     // Register button handler
     const handleRegister = async () => {
-        console.log("Register invoked");
-        console.log({ firstName, lastName, email, password });
+        try {
+            const response = await fetch(`${urlConfig.backendUrl}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password,
+                }),
+            });
+    
+            const json = await response.json(); // Task 1: Access data in JSON format
+    
+            if (!response.ok || json.error) {
+                setShowerr(json.error || 'Registration failed'); // Task 5: Set an error message
+                return;
+            }
+    
+            // Task 2: Set user details in sessionStorage
+            if (json.authtoken) {
+                sessionStorage.setItem('auth-token', json.authtoken);
+                sessionStorage.setItem('name', firstName);
+                sessionStorage.setItem('email', json.email);
+    
+                setIsLoggedIn(true);        // Task 3: Mark as logged in
+                navigate('/app');           // Task 4: Navigate to main page
+            }
+    
+        } catch (e) {
+            setShowerr(e.message); // Task 5: Catch block error message
+            console.error('Error during registration:', e.message);
+        }
     };
+    
 
     return (
         <div className="container mt-5">
@@ -68,6 +116,7 @@ function RegisterPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
+                        {showerr && <div className="text-danger mt-1">{showerr}</div>}
 
                         <button className="btn btn-primary w-100 mb-3" onClick={handleRegister}>
                             Register
