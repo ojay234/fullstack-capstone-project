@@ -107,6 +107,73 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Task 1: Import body and validationResult 
+router.put(
+  '/update',
+  [
+    body('firstName').notEmpty().withMessage('First name is required'),
+    body('lastName').notEmpty().withMessage('Last name is required'),
+  ],
+  async (req, res) => {
+    // Task 2: Validate request input
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error('Validation errors in update request', errors.array());
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      // Task 3: Get email from headers
+      const email = req.headers.email;
+      if (!email) {
+        logger.error('Email not found in request headers');
+        return res
+          .status(400)
+          .json({ error: 'Email not found in the request headers' });
+      }
+
+      // Task 4: Connect to MongoDB
+      const db = await connectToDatabase();
+      const collection = db.collection('users');
+
+      // Task 5: Find user by email
+      const existingUser = await collection.findOne({ email });
+      if (!existingUser) {
+        logger.error(`No user found with email: ${email}`);
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Task 6: Update user credentials
+      existingUser.firstName = req.body.firstName;
+      existingUser.lastName = req.body.lastName;
+      existingUser.updatedAt = new Date();
+
+      const updatedUserDoc = await collection.findOneAndUpdate(
+        { email },
+        { $set: existingUser },
+        { returnDocument: 'after' }
+      );
+
+      const updatedUser = updatedUserDoc.value;
+
+      // Task 7: Create JWT with user._id
+      const payload = {
+        user: {
+          id: updatedUser._id.toString(),
+        },
+      };
+      const authtoken = jwt.sign(payload, JWT_SECRET);
+
+      logger.info(`User ${email} updated successfully`);
+      return res.json({ authtoken });
+
+    } catch (e) {
+      logger.error('Update failed: ' + e.message);
+      return res.status(500).send('Internal server error');
+    }
+  }
+);
+
 
 
 module.exports = router;
