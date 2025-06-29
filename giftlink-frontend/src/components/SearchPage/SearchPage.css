@@ -34,6 +34,7 @@
 .age-range-slider {
     width: 100%;
     margin-top: 0.5rem;
+    cursor: pointer;
 }
 
 /* Task 5: Enhance search results cards appearance */
@@ -42,8 +43,64 @@
     border-radius: 10px;
     transition: box-shadow 0.3s ease-in-out;
     overflow: hidden;
+    margin-bottom: 1.5rem;
 }
 
+/* Task 6: Style the “No products found” alert message */
+.alert-info {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.75rem 1.25rem;
+    margin-top: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+/* Task 7: Apply a hover effect to search results cards */
 .search-results-card:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Task 8: Ensure images in search results are displayed appropriately */
+.search-results-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    max-height: 200px;
+}
+
+/* Task 9: Create a responsive layout for search results */
+@media (max-width: 768px) {
+    .search-input {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .search-button {
+        width: 100%;
+    }
+
+    .card-body h5 {
+        font-size: 1rem;
+    }
+
+    .card-body p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Task 10: Overall page styling */
+.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.filter-section {
+    background-color: #f8f9fa;
+}
+
+.card-footer {
+    background-color: #f1f1f1;
+    text-align: right;
 }
