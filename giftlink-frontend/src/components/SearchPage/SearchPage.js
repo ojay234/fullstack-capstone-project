@@ -108,7 +108,7 @@ function SearchPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
 
-                        {/* Task 8: Implement search button with onClick event to trigger search:*/}
+                        {/* Task 8: Implement search button with onClick event to trigger search*/}
                         <button className="search-button" onClick={handleSearch}>Search</button>
                     </div>
 
